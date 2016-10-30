@@ -230,6 +230,13 @@
             });
           }
 
+          function beforeLeave () {
+              isNavBarTransitioning = true;
+              translateElementsSync(0);
+              activeHeader = null;
+              cachedHeader = null;
+          }
+
           //Need to reinitialize the values on refreshComplete or things will get out of wack
           $scope.$on('scroll.refreshComplete', function () {
             initCoordinates();
@@ -238,12 +245,13 @@
           /**
            * Before the active view leaves, reset elements, and reset the scroll container
            */
-          $scope.$parent.$on('$ionicView.beforeLeave', function () {
-            isNavBarTransitioning = true;
-            translateElementsSync(0);
-            activeHeader = null;
-            cachedHeader = null;
-          });
+          $scope.$parent.$on('$ionicView.beforeLeave', beforeLeave);
+
+          /**
+           * Adding support for views with cache-view="false"
+           */
+          $scope.$parent.$on('$ionicView.unloaded', beforeLeave);
+
 
           /**
            * Scroll to the top when entering to reset then scrollView scrollTop. (prevents jumping)
